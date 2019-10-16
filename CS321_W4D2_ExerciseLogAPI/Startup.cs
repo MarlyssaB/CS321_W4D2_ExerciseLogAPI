@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using CS321_W4D2_ExerciseLogAPI.Infrastructure.Data;
 
 namespace CS321_W4D2_ExerciseLogAPI
 {
@@ -26,6 +27,8 @@ namespace CS321_W4D2_ExerciseLogAPI
         public void ConfigureServices(IServiceCollection services)
         {
             // TODO: AddDbContext
+            services.AddScoped<AppDbContext>();
+
             // TODO: register repositories for injection
             // TODO: register services for injection
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
