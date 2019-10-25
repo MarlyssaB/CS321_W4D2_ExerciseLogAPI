@@ -9,7 +9,7 @@ namespace CS321_W4D2_ExerciseLogAPI.Core.Services
         // CRUDL - create (add), read (get), update, delete (remove), list
 
         // create
-        User Add(User user);
+        User Add(User user); // todo old
         // read
         User Get(int id);
         // update

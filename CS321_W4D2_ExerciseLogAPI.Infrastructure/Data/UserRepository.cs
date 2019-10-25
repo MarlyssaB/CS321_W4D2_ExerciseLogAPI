@@ -1,16 +1,19 @@
-﻿using System;
-using System.Linq;
+﻿
+using System;
 using System.Collections.Generic;
-using System.Text;
-using CS321_W4D2_ExerciseLogAPI;
+using System.Linq;
 using CS321_W4D2_ExerciseLogAPI.Core.Models;
 using CS321_W4D2_ExerciseLogAPI.Core.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
 namespace CS321_W4D2_ExerciseLogAPI.Infrastructure.Data
 {
     public class UserRepository : IUserRepository
+
     {
         private readonly AppDbContext _dbContext;
+
         public UserRepository(AppDbContext dbContext)
         {
             _dbContext = dbContext;
@@ -25,21 +28,16 @@ namespace CS321_W4D2_ExerciseLogAPI.Infrastructure.Data
 
         public User Get(int id)
         {
-            return _dbContext.Users.FirstOrDefault(u => u.Id == id);
-        }
-
-        public User Update(User updatedUser)
-        {
-            var currentUser = this.Get(updatedUser.Id);
-            if (currentUser == null) return null;
-            _dbContext.Entry(currentUser).CurrentValues.SetValues(updatedUser);
-            _dbContext.SaveChanges();
-            return currentUser;
+            return _dbContext.Users
+                .Include(User => User.Activities)
+                .SingleOrDefault(user => user.Id == id);
         }
 
         public IEnumerable<User> GetAll()
         {
-            return _dbContext.Users.ToList();
+            return _dbContext.Users
+                .Include(user => user.Activities)
+                .ToList();
         }
 
         public void Remove(User user)
@@ -48,6 +46,25 @@ namespace CS321_W4D2_ExerciseLogAPI.Infrastructure.Data
             _dbContext.SaveChanges();
         }
 
+        public User Update(User updatedUser)
+        {
+            var currentUser = _dbContext.Users.FirstOrDefault(x => x.Id == updatedUser.Id);
 
-    } 
+            if (currentUser == null) return null;
+
+            _dbContext.Entry(currentUser)
+                .CurrentValues
+                .SetValues(updatedUser);
+
+            _dbContext.Update(currentUser);
+            _dbContext.SaveChanges();
+            return currentUser;
+        }
+        public IEnumerable<User> GetActivitiesforUser(int userId)
+        {
+            return _dbContext.Users
+                .Include(user => user.Activities)
+                .Where(u => u.Id == userId).ToList();
+        }
+    }
 }
